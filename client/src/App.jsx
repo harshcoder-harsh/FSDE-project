@@ -1,36 +1,26 @@
-import { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Products from './pages/Products';
 
 function App() {
-    const [data, setData] = useState(null);
-
-    useEffect(() => {
-        const apiUrl = import.meta.env.VITE_API_URL || '';
-        fetch(`${apiUrl}/api/health`)
-            .then(res => res.json())
-            .then(data => setData(data))
-            .catch(err => console.error('Error fetching health check:', err));
-    }, []);
-
-    return (
-        <div className="container">
-            <h1>ShopSmart</h1>
-            <div className="card">
-                <h2>Backend Status</h2>
-                {data ? (
-                    <div>
-                        <p>Status: <span className="status-ok">{data.status}</span></p>
-                        <p>Message: {data.message}</p>
-                        <p>Timestamp: {data.timestamp}</p>
-                    </div>
-                ) : (
-                    <p>Loading backend status...</p>
-                )}
-            </div>
-            <p className="hint">
-                Edit <code>src/App.jsx</code> and save to test HMR
-            </p>
-        </div>
-    )
+  return (
+    <Router>
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
+        <main className="flex-grow pt-16">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/products" element={<Products />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </Router>
+  );
 }
 
-export default App
+export default App;
