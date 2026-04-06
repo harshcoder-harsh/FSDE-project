@@ -1,0 +1,27 @@
+name: Deploy to EC2
+on:
+  push:
+    branches: [ main, master ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USERNAME }}
+          key: ${{ secrets.AWS_PRIVATE_KEY }}
+          script: |
+            echo "Connected to EC2 securely!"
+            # Ensure folder structure idempotently
+            mkdir -p ~/localloop
+            cd ~/localloop
+            
+            # Since git clone might not be setup or ssh keys forwarded, 
+            # ideally the deploy script handles idempotent environment setups
+            echo "Triggering deployment script"
+            bash ./scripts/deploy.sh
