@@ -14,24 +14,28 @@ app.use(cors());
 app.use(express.json());
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
-if (!STRIPE_SECRET_KEY) {
-  throw new Error('Missing STRIPE_SECRET_KEY');
-}
-
-const stripe = new Stripe(STRIPE_SECRET_KEY, {
-  apiVersion: '2025-02-24.acacia' as any,
-});
+const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
 
 const MONGODB_URI = process.env.MONGODB_URI;
-if (!MONGODB_URI) {
-  throw new Error('Missing MONGODB_URI');
-}
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret';
 
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+if (MONGODB_URI) {
+  mongoose.connect(MONGODB_URI)
+    .then(() => {
+      console.log('Connected to MongoDB');
+      Product.countDocuments().then(count => {
+        if (count < 70) {
+          Product.deleteMany({}).then(() => {
+            Product.insertMany(seedProducts).then(() => console.log(`Seeded ${seedProducts.length} luxury items`));
+          });
+        }
+      });
+    })
+    .catch(err => console.error('MongoDB connection error:', err));
+} else {
+  console.warn('MONGODB_URI not set. Falling back to in-memory products.');
+}
 
 // Models
 const userSchema = new mongoose.Schema({
@@ -72,14 +76,6 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model('Order', orderSchema);
 
-Product.countDocuments().then(count => {
-  if (count < 70) { // Force re-seed if we don't have enough products
-    Product.deleteMany({}).then(() => {
-      Product.insertMany(seedProducts).then(() => console.log(`Seeded ${seedProducts.length} luxury items`));
-    });
-  }
-});
-
 // Auth Routes
 app.post('/api/signup', async (req, res) => {
   try {
@@ -119,8 +115,11 @@ app.post('/api/login', async (req, res) => {
 // Product & Order Routes
 app.get('/api/products', async (req, res) => {
   try {
+    if (!MONGODB_URI) {
+      return res.json(seedProducts.map((p, idx) => ({ ...p, id: String(idx + 1) })));
+    }
     const products = await Product.find();
-    res.json(products);
+    return res.json(products);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch products' });
   }
@@ -133,6 +132,10 @@ app.post('/api/create-checkout-session', async (req, res) => {
   }
 
   try {
+    if (!stripe) {
+      return res.status(500).json({ error: 'Payments are not configured on the server.' });
+    }
+
     const origin = (req.headers.origin as string) || process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
     const lineItems = await Promise.all(items.map(async (item: any) => {
       let product;
