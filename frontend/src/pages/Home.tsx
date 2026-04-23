@@ -8,6 +8,7 @@ import { apiUrl } from '../lib/api';
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(15);
 
   useEffect(() => {
     fetch(apiUrl('/api/products'))
@@ -121,11 +122,22 @@ export default function Home() {
               <Loader2 className="w-10 h-10 animate-spin text-zinc-500" />
             </div>
           ) : (
-            products.map((product) => (
+            products.slice(0, visibleCount).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))
           )}
         </div>
+
+        {!loading && visibleCount < products.length && (
+          <div className="mt-16 flex justify-center">
+            <button 
+              onClick={() => setVisibleCount(prev => prev + 15)}
+              className="bg-transparent border border-white/20 text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-colors"
+            >
+              Load More Pieces
+            </button>
+          </div>
+        )}
       </section>
 
       {/* Heavy Marquee Section */}
