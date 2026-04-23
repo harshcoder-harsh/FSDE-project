@@ -13,12 +13,21 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_mock_key_only_for_dev', {
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+if (!STRIPE_SECRET_KEY) {
+  throw new Error('Missing STRIPE_SECRET_KEY');
+}
+
+const stripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: '2025-02-24.acacia' as any,
 });
 
-const MONGODB_URI = 'mongodb+srv://anmolk_db_user:eTJ0EGZcNQASsird@cluster0.emnl8mp.mongodb.net/ecommerce?appName=Cluster0';
-const JWT_SECRET = process.env.JWT_SECRET || 'luxe_secret_key_12345';
+const MONGODB_URI = process.env.MONGODB_URI;
+if (!MONGODB_URI) {
+  throw new Error('Missing MONGODB_URI');
+}
+
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret';
 
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
@@ -124,13 +133,23 @@ app.post('/api/create-checkout-session', async (req, res) => {
   }
 
   try {
+    const origin = (req.headers.origin as string) || process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
     const lineItems = await Promise.all(items.map(async (item: any) => {
       let product;
       if (mongoose.Types.ObjectId.isValid(item.productId)) {
         product = await Product.findById(item.productId);
       }
       
-      const price = product ? product.price : (item.productId === '1' ? 295 : item.productId === '2' ? 450 : item.productId === '3' ? 890 : 100);
+      const price =
+        (product?.price ?? null) !== null
+          ? (product?.price as number)
+          : item.productId === '1'
+            ? 295
+            : item.productId === '2'
+              ? 450
+              : item.productId === '3'
+                ? 890
+                : 100;
       const name = product ? product.name : 'Premium Item';
       const image = product ? product.imageUrl : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800';
 
@@ -141,7 +160,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
             name: name,
             images: [image],
           },
-          unit_amount: Math.round(price * 100),
+          unit_amount: Math.round((price as number) * 100),
         },
         quantity: item.quantity,
       };
@@ -151,8 +170,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `http://localhost:5175/checkout?success=true`,
-      cancel_url: `http://localhost:5175/checkout?canceled=true`,
+      success_url: `${origin}/checkout?success=true`,
+      cancel_url: `${origin}/checkout?canceled=true`,
     });
 
     res.json({ id: session.id, url: session.url });
@@ -172,8 +191,8 @@ app.post('/api/orders', async (req, res) => {
     let price = 0;
     if (mongoose.Types.ObjectId.isValid(item.productId)) {
       const product = await Product.findById(item.productId);
-      if (product) {
-        price = product.price;
+      if (product?.price != null) {
+        price = product.price as number;
       }
     } else {
       if (item.productId === '1') price = 295.00;

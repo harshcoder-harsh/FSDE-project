@@ -28,16 +28,14 @@
         "./src/*"
       ]
     },
-    "types": [
-      "node",
-      "express",
-      "jest"
-    ],
     "esModuleInterop": true
   },
   "include": [
     "src",
-    "api",
-    "tests"
+    "vite-env.d.ts"
+  ],
+  "exclude": [
+    "tests",
+    "cypress"
   ]
 }
