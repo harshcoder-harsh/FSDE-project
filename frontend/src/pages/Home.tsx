@@ -121,16 +121,8 @@ export default function Home() {
               <Loader2 className="w-10 h-10 animate-spin text-zinc-500" />
             </div>
           ) : (
-            products.map((product, i) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "100px" }}
-                transition={{ duration: 0.5, delay: (i % 5) * 0.1 }}
-              >
-                <ProductCard product={product} />
-              </motion.div>
+            products.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))
           )}
         </div>
