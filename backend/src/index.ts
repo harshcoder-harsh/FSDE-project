@@ -76,6 +76,14 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model('Order', orderSchema);
 
+app.get('/api/health', (req, res) => {
+  res.json({
+    ok: true,
+    stripeConfigured: Boolean(STRIPE_SECRET_KEY),
+    mongoConfigured: Boolean(MONGODB_URI),
+  });
+});
+
 // Auth Routes
 app.post('/api/signup', async (req, res) => {
   try {
