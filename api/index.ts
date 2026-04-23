@@ -13,7 +13,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const stripe = new Stripe('sk_test_mock_key_only_for_dev', {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_mock_key_only_for_dev', {
   apiVersion: '2025-02-24.acacia' as any,
 });
 
