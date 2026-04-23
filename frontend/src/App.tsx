@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import CartDrawer from './components/CartDrawer';
 import Home from './pages/Home';
@@ -6,6 +6,7 @@ import ProductDetails from './pages/ProductDetails';
 import Checkout from './pages/Checkout';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import { useAuth } from './store/useAuth';
 
 // Optional placeholder components for missing routes
 const Placeholder = ({ title }: { title: string }) => (
@@ -17,6 +18,12 @@ const Placeholder = ({ title }: { title: string }) => (
 function AppContent() {
   const location = useLocation();
   const hideNavAndCart = location.pathname === '/login' || location.pathname === '/signup';
+  const token = useAuth((state) => state.token);
+  const requiresAuth = location.pathname !== '/login' && location.pathname !== '/signup';
+
+  if (requiresAuth && !token) {
+    return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />;
+  }
 
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-white selection:text-black">

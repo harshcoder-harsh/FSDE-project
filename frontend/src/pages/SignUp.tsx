@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../store/useAuth';
 import { Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -12,7 +12,15 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const login = useAuth((state) => state.login);
+  const token = useAuth((state) => state.token);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = (location.state as any)?.from || '/';
+
+  useEffect(() => {
+    if (token) navigate(from, { replace: true });
+  }, [token, navigate, from]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +38,7 @@ export default function SignUp() {
       
       if (res.ok) {
         login(data.user, data.token);
-        navigate('/');
+        navigate(from, { replace: true });
       } else {
         setError(data.error || 'Failed to sign up');
       }
