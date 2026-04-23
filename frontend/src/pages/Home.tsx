@@ -3,13 +3,14 @@ import { useEffect, useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import { Product } from '../store/useCart';
 import { motion } from 'framer-motion';
+import { apiUrl } from '../lib/api';
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/products')
+    fetch(apiUrl('/api/products'))
       .then(res => res.json())
       .then(data => {
         setProducts(data);

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../store/useAuth';
 import { Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { apiUrl } from '../lib/api';
 
 export default function SignUp() {
   const [name, setName] = useState('');
@@ -19,7 +20,7 @@ export default function SignUp() {
     setError('');
 
     try {
-      const res = await fetch('/api/signup', {
+      const res = await fetch(apiUrl('/api/signup'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password })

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { useCart, Product } from '../store/useCart';
+import { apiUrl } from '../lib/api';
 
 export default function ProductDetails() {
   const { id } = useParams<{ id: string }>();
@@ -15,7 +16,7 @@ export default function ProductDetails() {
   useEffect(() => {
     window.scrollTo(0, 0);
     setLoading(true);
-    fetch('/api/products')
+    fetch(apiUrl('/api/products'))
       .then(res => res.json())
       .then(data => {
         const found = data.find((p: Product) => p.id === id);

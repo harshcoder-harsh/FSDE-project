@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../store/useCart';
 import { Loader2, CheckCircle2 } from 'lucide-react';
+import { apiUrl } from '../lib/api';
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
@@ -24,7 +25,7 @@ export default function Checkout() {
   const handleCheckout = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/create-checkout-session', {
+      const response = await fetch(apiUrl('/api/create-checkout-session'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ items: items.map(i => ({ productId: i.id, quantity: i.quantity })) }),
