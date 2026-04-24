@@ -184,7 +184,12 @@ export default function Home() {
             <p className="text-xl text-zinc-400 mb-8 font-light leading-relaxed border-l-2 border-zinc-800 pl-6">
               We believe in removing the unnecessary. Our design philosophy centers around creating objects that serve their purpose perfectly while maintaining an understated elegance. Every stitch, every material choice is intentional.
             </p>
-            <button className="bg-transparent border border-white text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-colors">
+            <button 
+              onClick={() => {
+                alert("Our Story: Founded in 2026, Noir Edition is dedicated to the art of minimalism and uncompromising craftsmanship. (Full story page coming soon!)");
+              }}
+              className="bg-transparent border border-white text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-colors"
+            >
               Read Our Story
             </button>
           </motion.div>

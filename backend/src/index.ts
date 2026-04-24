@@ -25,7 +25,8 @@ if (MONGODB_URI) {
     .then(() => {
       console.log('Connected to MongoDB');
       Product.countDocuments().then(count => {
-        if (count < 70) {
+        // Force a re-seed to ensure all items have matching images
+        if (count !== 80) {
           Product.deleteMany({}).then(() => {
             Product.insertMany(seedProducts).then(() => console.log(`Seeded ${seedProducts.length} luxury items`));
           });
