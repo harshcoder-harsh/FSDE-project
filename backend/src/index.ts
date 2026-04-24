@@ -24,13 +24,9 @@ if (MONGODB_URI) {
   mongoose.connect(MONGODB_URI)
     .then(() => {
       console.log('Connected to MongoDB');
-      Product.countDocuments().then(count => {
-        // Force a re-seed to ensure all items have matching images
-        if (count !== 80) {
-          Product.deleteMany({}).then(() => {
-            Product.insertMany(seedProducts).then(() => console.log(`Seeded ${seedProducts.length} luxury items`));
-          });
-        }
+      // We will ALWAYS delete and re-seed to guarantee correct images!
+      Product.deleteMany({}).then(() => {
+        Product.insertMany(seedProducts).then(() => console.log(`Force re-seeded ${seedProducts.length} luxury items to fix image mapping`));
       });
     })
     .catch(err => console.error('MongoDB connection error:', err));
