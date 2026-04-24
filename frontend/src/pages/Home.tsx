@@ -156,7 +156,7 @@ export default function Home() {
       </section>
 
       {/* Editorial Section */}
-      <section className="py-32 bg-zinc-950 relative overflow-hidden">
+      <section id="editorial" className="py-32 bg-zinc-950 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618022325802-7e5e732d97a1?auto=format&fit=crop&q=80&w=2000')] opacity-5 mix-blend-screen" />
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center relative z-10">
           <motion.div 
