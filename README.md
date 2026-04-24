@@ -2,7 +2,7 @@
 
 A premium, full-stack e-commerce web application featuring a monochromatic "Noir" aesthetic, high-end animations, authentication, and a fully functional payment gateway.
 
-## 🌟 Features
+## Features
 
 - **Premium UI/UX:** High-end glassmorphism design, smooth Framer Motion animations, and a responsive luxury grid layout.
 - **Full-Stack Architecture:** 
@@ -13,14 +13,14 @@ A premium, full-stack e-commerce web application featuring a monochromatic "Noir
 - **Dynamic Collection:** Automatically seeds and serves 80 meticulously curated luxury items from MongoDB.
 - **Performance Optimized:** Includes lazy loading, pagination for the product grid, and Brotli/Gzip compression (`vite-plugin-compression`) for lightning-fast deployments.
 
-## 📁 Repository Structure
+## Repository Structure
 
 The project is structured as a monorepo workspace containing two main directories:
 
 - `/frontend` - The React Vite frontend application.
 - `/backend` - The Node.js Express backend application.
 
-## 🚀 Quick Start (Local Development)
+## Quick Start (Local Development)
 
 ### Prerequisites
 - Node.js (v18+ recommended)
@@ -57,7 +57,7 @@ npm run dev
 - The frontend will be available at `http://localhost:5173`
 - The backend API will be available at `http://localhost:3001`
 
-## ☁️ Deployment Guide (Render)
+## Deployment Guide (Render)
 
 ### Backend Deployment (Web Service)
 1. **Build Command:** `yarn install; yarn build` (or `npm install && npm run build`)
@@ -79,7 +79,7 @@ npm run dev
    - Destination: `/index.html`
    - Action: `Rewrite`
 
-## 🛠️ API Endpoints
+## API Endpoints
 
 - `GET /api/health` - Check if the server, MongoDB, and Stripe are configured correctly.
 - `GET /api/products` - Fetch all available products.
@@ -88,7 +88,7 @@ npm run dev
 - `POST /api/create-checkout-session` - Initialize a Stripe payment session.
 - `POST /api/orders` - Save a completed order to the database.
 
-## 🎨 Built With
+## Built With
 - **Frontend:** React, Vite, Tailwind CSS, Framer Motion, Zustand, Lucide React.
 - **Backend:** Node.js, Express, Mongoose, Stripe API, JWT, bcryptjs.
 - **Tooling:** TypeScript, concurrently, ESLint.
