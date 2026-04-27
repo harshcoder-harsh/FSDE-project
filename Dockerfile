@@ -1,32 +1,34 @@
-# Stage 1: Build
-FROM node:20-alpine AS builder
-
+# Stage 1: Build the application
+FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy root package.json and lock files
+COPY package.json package-lock.json* ./
+COPY backend/package.json backend/
 
-# Install all dependencies
-RUN npm ci
+# Install dependencies for the monorepo workspace
+RUN npm install
 
-# Copy application source
-COPY . .
+# Copy the rest of the backend source code
+COPY backend/ backend/
 
-# Build frontend and backend
-RUN npm run build
+# Build the backend application
+RUN npm run build --workspace=backend
 
-# Stage 2: Production
-FROM node:20-alpine
-
+# Stage 2: Run the application
+FROM node:18-alpine
 WORKDIR /app
 
-# Copy package files and install only production dependencies
-COPY package*.json ./
-RUN npm ci --omit=dev
+# Copy built assets and dependencies from the builder stage
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/backend/node_modules ./backend/node_modules
+COPY --from=builder /app/backend/dist ./backend/dist
+COPY --from=builder /app/backend/package.json ./backend/
 
-# Copy built assets
-COPY --from=builder /app/dist ./dist
-# If you have a separate backend build folder, copy it here as well
+# Expose the port the app runs on
+EXPOSE 3001
+ENV PORT=3001
+ENV NODE_ENV=production
 
-EXPOSE 3000
-CMD ["npm", "start"]
+# Start the application
+CMD ["node", "backend/dist/server.js"]
